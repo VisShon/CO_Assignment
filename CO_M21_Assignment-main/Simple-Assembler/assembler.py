@@ -11,11 +11,11 @@
 # Type F:opcode(5),unused(11)
 #       hlt
 
-opcodesA={'add':'00000','sub':'00001','mul':'00110','XOR':'01010','OR':'01011','AND':'01100'}
-opcodesB={'mov imm':'00010','RS':'01000','LS':'01001'}
-opcodesC={'mov':'00011','div':'00111','inv':'01101','comp':'01110'}
+opcodesA={'add':'00000','sub':'00001','mul':'00110','xor':'01010','or':'01011','and':'01100'}
+opcodesB={'mov':'00010','rs':'01000','ls':'01001'}
+opcodesC={'mov':'00011','div':'00111','not':'01101','cmp':'01110'}
 opcodesD={'ld':'00100','st':'00101'}
-opcodesE={'jump':'01111','jumpl':'10000','jumpg':'10001','jumpe':'10010'}
+opcodesE={'jmp':'01111','jlt':'10000','jgt':'10001','je':'10010'}
 opcodesF={'hlt':'1001100000000000'}
 
 
