@@ -11,6 +11,8 @@
 # Type F:opcode(5),unused(11)
 #       hlt
 
+import sys
+
 opcodesA={'add':'00000','sub':'00001','mul':'00110','xor':'01010','or':'01011','and':'01100'}
 opcodesB={'mov':'00010','rs':'01000','ls':'01001'}
 opcodesC={'mov':'00011','div':'00111','not':'01101','cmp':'01110'}
@@ -21,7 +23,7 @@ opcodesF={'hlt':'1001100000000000'}
 registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110'}
 # write for registers and flags
 
-def isType(inst,val=""):
+def isType(inst,val=" "):
     if(inst in opcodesA.keys()):
         return opcodesA
     elif(inst in opcodesB.keys()) and (val[0]=='$'):
@@ -34,6 +36,16 @@ def isType(inst,val=""):
         return opcodesE
     elif(inst in opcodesF.keys()):
         return opcodesF
+    else:
+        print("Invalid instruction")
+        sys.exit()
+
+def getrgst(reg):
+    if(reg in registers.keys()):
+        return registers[reg]
+    else:
+        print("Invalid register")
+        sys.exit()
 
 
 with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test4','r') as f:
@@ -58,6 +70,21 @@ def main():
     addrType={}
 
 #   traversing the program once to add labels, variables and addresses
+    for i in instruction:
+        inst=i.split()
+        if(':' in inst[0]):
+            labelIn[(inst[0])[:-1]]=str(toBin(count))
+            #addrType[str(count)]=isType(inst[1])
+        #elif(inst[0]=='hlt'):
+            #addrType[str(count)] = isType(inst[0])
+        #elif(inst[0]!='var'):
+            #addrType[str(count)]=isType(inst[1])
+        count+=1
+
+    for i in instruction:
+        if(inst[0]=='var'):
+            varIn[inst[1]]=str(toBin(count))
+            count+=1
 
     rslt=""
     num=0
@@ -75,21 +102,20 @@ def main():
             else : opcodes=isType(ins[0])
             rslt+="\n"
             rslt+=opcodes[ins[0]]
-            if(opcodes==opcodesA):
-                rslt+='00'
-                rslt+=registers[ins[1]]
-                rslt+=registers[ins[2]]
-                rslt+=registers[ins[3]]
-            elif(opcodes==opcodesB):
-                rslt=rslt+registers[ins[1]]
-                rslt=rslt+str(toBin(int((ins[2])[1:])))
-            elif(opcodes==opcodesC):
-                rslt=rslt+"00000"+registers[ins[1]]+registers[ins[2]]
-            elif(opcodes==opcodesD):
-             rslt = rslt + registers[ins[1]] + varIn[ins[2]]
-            elif(opcodes==opcodesE):
+            if opcodes == opcodesA:
+                rslt += '00'
+                rslt += getrgst(ins[1])
+                rslt += getrgst(ins[2])
+                rslt += getrgst(ins[3])
+            elif opcodes == opcodesB:
+                rslt = rslt+getrgst(ins[1])
+                rslt = rslt+str(toBin(int((ins[2])[1:])))
+            elif opcodes == opcodesC:
+                rslt = rslt + "00000" + getrgst(ins[1])+getrgst(ins[2])
+            elif opcodes == opcodesD:
+             rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
+            elif opcodes == opcodesE:
                 rslt = rslt + "000" + varIn[ins[1]]
-
     print(rslt)
 
 if __name__=="__main__":
