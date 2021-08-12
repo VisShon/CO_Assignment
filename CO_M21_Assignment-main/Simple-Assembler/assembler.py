@@ -21,25 +21,23 @@ opcodesF={'hlt':'1001100000000000'}
 registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110'}
 # write for registers and flags
 
-def isType(inst):
-    lst=inst.split()
-    if(lst[0] in opcodesA.keys()):
+def isType(inst,val=""):
+    if(inst in opcodesA.keys()):
         return opcodesA
-    elif(lst[0] in opcodesB.keys()):
+    elif(inst in opcodesB.keys()) and (val[0]=='$'):
         return opcodesB
-    elif(lst[0] in opcodesC.keys()):
+    elif(inst in opcodesC.keys()):
         return opcodesC
-    elif(lst[0] in opcodesD.keys()):
+    elif(inst in opcodesD.keys()):
         return opcodesD
-    elif(lst[0] in opcodesE.keys()):
+    elif(inst in opcodesE.keys()):
         return opcodesE
-    elif(lst[0] in opcodesF.keys()):
+    elif(inst in opcodesF.keys()):
         return opcodesF
 
 
-with open('/Users/tanishqashitalsingh/Desktop/CO-assignment/CO-assignment/CO_M21_Assignment-main/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test3','r') as f:
+with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test4','r') as f:
     instructions = f.read()
-instruction = instructions.split("\n")
 
 def main():
 
@@ -60,9 +58,12 @@ def main():
         if(ins[0]=="hlt"):
             rslt+="\n"+opcodesF['hlt']
         elif(':' in ins[0]):
+            pass
 #           here we will use that ra function with the elements in the  list ins other omitting the first element which is the label
         else:
-            opcodes=isType(ins[0])
+            if(ins[0]=="mov"):
+                opcodes = isType(ins[0],ins[2])
+            else : opcodes=isType(ins[0])
             rslt+="\n"
             rslt+=opcodes[ins[0]]
             if(opcodes==opcodesA):
@@ -70,3 +71,7 @@ def main():
                 rslt+=registers[ins[1]]
                 rslt+=registers[ins[2]]
                 rslt+=registers[ins[3]]
+    print(rslt)
+
+if __name__=="__main__":
+    main()
