@@ -55,6 +55,9 @@ with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21
     instructions = f.read()
 
 def toBin(a):
+    if(a<0)or(a>255):
+        print("Illegal Immediate values")
+        sys.exit()
     bn = bin(a).replace('0b','')
     x = bn[::-1]
     while len(x) < 8:
@@ -96,6 +99,11 @@ def main():
                 print("Variable not declared in beginning")
         else:
             varerror=1
+
+    for key in varIn:
+        if key in labelIn:
+            print("Misuse of labels as variables or vice-versa")
+            sys.exit()
 
     rslt=""
     hlterror=0
