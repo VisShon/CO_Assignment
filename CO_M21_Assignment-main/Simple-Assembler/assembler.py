@@ -106,7 +106,7 @@ def main():
             print("hlt not being used as the last instruction")
             sys.exit()
         ins=i.split()
-        if(ins[0]=="hlt"):
+        if(ins[0] == "hlt"):
             hlterror=1
             if(len(ins)!=1):
                 error()
