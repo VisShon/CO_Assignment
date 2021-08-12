@@ -47,6 +47,9 @@ def getrgst(reg):
         print("Invalid register")
         sys.exit()
 
+def error():
+    print("Wrong syntax used for instruction")
+    sys.exit()
 
 with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test4','r') as f:
     instructions = f.read()
@@ -80,17 +83,23 @@ def main():
         #elif(inst[0]!='var'):
             #addrType[str(count)]=isType(inst[1])
         count+=1
-
+    varerror=0
     for i in instruction:
         if(inst[0]=='var'):
             varIn[inst[1]]=str(toBin(count))
             count+=1
+            if(varerror==1):
+                print("Variable not declared in beginning")
+        else:
+            varerror=1
 
     rslt=""
     num=0
     for i in instruction:
         ins=i.split()
         if(ins[0]=="hlt"):
+            if(len(ins)!=1):
+                error()
             rslt+="\n"+opcodesF['hlt']
         elif(':' in ins[0]):
             pass
@@ -98,23 +107,35 @@ def main():
 # the elements in the  list ins other omitting the first element which is the label.
         else:
             if(ins[0]=="mov"):
+                if (len(ins) != 3):
+                    error()
                 opcodes = isType(ins[0],ins[2])
             else : opcodes=isType(ins[0])
             rslt+="\n"
             rslt+=opcodes[ins[0]]
             if opcodes == opcodesA:
+                if(len(ins)!=4):
+                    error()
                 rslt += '00'
                 rslt += getrgst(ins[1])
                 rslt += getrgst(ins[2])
                 rslt += getrgst(ins[3])
             elif opcodes == opcodesB:
+                if (len(ins) != 3):
+                    error()
                 rslt = rslt+getrgst(ins[1])
                 rslt = rslt+str(toBin(int((ins[2])[1:])))
             elif opcodes == opcodesC:
+                if (len(ins) != 3):
+                    error()
                 rslt = rslt + "00000" + getrgst(ins[1])+getrgst(ins[2])
             elif opcodes == opcodesD:
-             rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
+                if (len(ins) != 3):
+                    error()
+                rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
             elif opcodes == opcodesE:
+                if (len(ins) != 2):
+                    error()
                 rslt = rslt + "000" + varIn[ins[1]]
     print(rslt)
 
