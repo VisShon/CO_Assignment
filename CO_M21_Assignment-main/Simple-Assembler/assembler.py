@@ -51,7 +51,7 @@ def error():
     print("Wrong syntax used for instruction")
     sys.exit()
 
-with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test4','r') as f:
+with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/errorGen/test2','r') as f:
     instructions = f.read()
 
 def toBin(a):
@@ -75,6 +75,8 @@ def main():
 #   traversing the program once to add labels, variables and addresses
     for i in instruction:
         inst=i.split()
+        if(len(inst)==0):
+            continue
         if(':' in inst[0]):
             labelIn[(inst[0])[:-1]]=str(toBin(count))
             #addrType[str(count)]=isType(inst[1])
@@ -85,6 +87,8 @@ def main():
         count+=1
     varerror=0
     for i in instruction:
+        if (len(inst) == 0):
+            continue
         if(inst[0]=='var'):
             varIn[inst[1]]=str(toBin(count))
             count+=1
@@ -94,10 +98,16 @@ def main():
             varerror=1
 
     rslt=""
-    num=0
+    hlterror=0
     for i in instruction:
+        if (len(inst) == 0):
+            continue
+        if(hlterror==1):
+            print("hlt not being used as the last instruction")
+            sys.exit()
         ins=i.split()
         if(ins[0]=="hlt"):
+            hlterror=1
             if(len(ins)!=1):
                 error()
             rslt+="\n"+opcodesF['hlt']
@@ -137,6 +147,9 @@ def main():
                 if (len(ins) != 2):
                     error()
                 rslt = rslt + "000" + varIn[ins[1]]
+    if(hlterror==0):
+        print("Missing hlt instruction")
+        sys.exit()
     print(rslt)
 
 if __name__=="__main__":
