@@ -86,7 +86,7 @@ def main():
             elif(opcodes==opcodesC):
                 rslt=rslt+"00000"+registers[ins[1]]+registers[ins[2]]
             elif(opcodes==opcodesD):
-                rslt = rslt + registers[ins[1]] + varIn[ins[2]]
+             rslt = rslt + registers[ins[1]] + varIn[ins[2]]
             elif(opcodes==opcodesE):
                 rslt = rslt + "000" + varIn[ins[1]]
 
