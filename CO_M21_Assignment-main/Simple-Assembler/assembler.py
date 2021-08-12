@@ -39,6 +39,14 @@ def isType(inst,val=""):
 with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/simpleBin/test4','r') as f:
     instructions = f.read()
 
+def toBin(a):
+    bn = bin(a).replace('0b','')
+    x = bn[::-1]
+    while len(x) < 8:
+        x += '0'
+    bn = x[::-1]
+    return bn
+
 def main():
 
 # handel input
@@ -59,7 +67,8 @@ def main():
             rslt+="\n"+opcodesF['hlt']
         elif(':' in ins[0]):
             pass
-#           here we will use that ra function with the elements in the  list ins other omitting the first element which is the label
+# here we will use that ra function with
+# the elements in the  list ins other omitting the first element which is the label.
         else:
             if(ins[0]=="mov"):
                 opcodes = isType(ins[0],ins[2])
@@ -71,6 +80,16 @@ def main():
                 rslt+=registers[ins[1]]
                 rslt+=registers[ins[2]]
                 rslt+=registers[ins[3]]
+            elif(opcodes==opcodesB):
+                rslt=rslt+registers[ins[1]]
+                rslt=rslt+str(toBin(int((ins[2])[1:])))
+            elif(opcodes==opcodesC):
+                rslt=rslt+"00000"+registers[ins[1]]+registers[ins[2]]
+            elif(opcodes==opcodesD):
+                rslt = rslt + registers[ins[1]] + varIn[ins[2]]
+            elif(opcodes==opcodesE):
+                rslt = rslt + "000" + varIn[ins[1]]
+
     print(rslt)
 
 if __name__=="__main__":
