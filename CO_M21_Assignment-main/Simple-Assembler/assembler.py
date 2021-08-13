@@ -12,6 +12,7 @@
 #       hlt
 
 import sys
+# dictionary for opcodes
 
 opcodesA={'add':'00000','sub':'00001','mul':'00110','xor':'01010','or':'01011','and':'01100'}
 opcodesB={'mov':'00010','rs':'01000','ls':'01001'}
@@ -20,9 +21,13 @@ opcodesD={'ld':'00100','st':'00101'}
 opcodesE={'jmp':'01111','jlt':'10000','jgt':'10001','je':'10010'}
 opcodesF={'hlt':'1001100000000000'}
 
+# register dictionary
 registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110'}
-# write for registers and flags
 
+# flags dictionary
+Flags={'V':'0','L':'0','G':'0','E':'0'}
+
+# function to return type of instruction
 def isType(inst,val=" "):
     if(inst in opcodesA.keys()):
         return opcodesA
@@ -40,6 +45,7 @@ def isType(inst,val=" "):
         print("Invalid instruction")
         sys.exit()
 
+# function to check
 def getrgst(reg):
     if(reg in registers.keys()):
         return registers[reg]
@@ -51,9 +57,6 @@ def error():
     print("Wrong syntax used for instruction")
     sys.exit()
 
-with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/errorGen/test2','r') as f:
-    instructions = f.read()
-
 def toBin(a):
     if(a<0)or(a>255):
         print("Illegal Immediate values")
@@ -64,6 +67,11 @@ def toBin(a):
         x += '0'
     bn = x[::-1]
     return bn
+
+#with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/hardBin/test2','r') as f:
+#   instructions = f.read()
+
+instructions = sys.stdin.read()
 
 def main():
 
@@ -87,13 +95,15 @@ def main():
             #addrType[str(count)] = isType(inst[0])
         #elif(inst[0]!='var'):
             #addrType[str(count)]=isType(inst[1])
-        count+=1
+        if (inst[0] != 'var')or(len(inst)==0):
+            count += 1
     varerror=0
     for i in instruction:
-        if (len(inst) == 0):
+        ins = i.split()
+        if (len(ins) == 0):
             continue
-        if(inst[0]=='var'):
-            varIn[inst[1]]=str(toBin(count))
+        if(ins[0]=='var'):
+            varIn[ins[1]]=str(toBin(count))
             count+=1
             if(varerror==1):
                 print("Variable not declared in beginning")
@@ -104,16 +114,15 @@ def main():
         if key in labelIn:
             print("Misuse of labels as variables or vice-versa")
             sys.exit()
-
     rslt=""
     hlterror=0
     for i in instruction:
-        if (len(inst) == 0):
+        ins = i.split()
+        if (len(ins) == 0):
             continue
         if(hlterror==1):
             print("hlt not being used as the last instruction")
             sys.exit()
-        ins=i.split()
         if(ins[0] == "hlt"):
             hlterror=1
             if(len(ins)!=1):
@@ -127,6 +136,8 @@ def main():
             else : opcodes=isType(ins[1])
             rslt+="\n"
             rslt+=opcodes[ins[1]]
+            if(ins[1]=='hlt'):
+                hlterror=1
             if opcodes == opcodesA:
                 if(len(ins)!=5):
                     error()
@@ -142,7 +153,10 @@ def main():
             elif opcodes == opcodesC:
                 if (len(ins) != 4):
                     error()
-                rslt = rslt + "00000" + getrgst(ins[2])+getrgst(ins[3])
+                if(ins[3]=='FLAGS'):
+                    rslt = rslt + "00000" + getrgst(ins[2])+"111"
+                else:
+                    rslt = rslt + "00000" + getrgst(ins[2]) + getrgst(ins[3])
             elif opcodes == opcodesD:
                 if (len(ins) != 4):
                     error()
@@ -151,9 +165,8 @@ def main():
                 if (len(ins) != 3):
                     error()
                 rslt = rslt + "000" + varIn[ins[2]]
-            
-# here we will use that ra function with
-# the elements in the  list ins other omitting the first element which is the label.
+        elif(ins[0]=='var'):
+            continue
         else:
             if(ins[0]=="mov"):
                 if (len(ins) != 3):
@@ -177,7 +190,10 @@ def main():
             elif opcodes == opcodesC:
                 if (len(ins) != 3):
                     error()
-                rslt = rslt + "00000" + getrgst(ins[1])+getrgst(ins[2])
+                if (ins[2] == 'FLAGS'):
+                    rslt = rslt + "00000" + getrgst(ins[1]) + "111"
+                else:
+                    rslt = rslt + "00000" + getrgst(ins[1]) + getrgst(ins[2])
             elif opcodes == opcodesD:
                 if (len(ins) != 3):
                     error()
@@ -185,7 +201,10 @@ def main():
             elif opcodes == opcodesE:
                 if (len(ins) != 2):
                     error()
-                rslt = rslt + "000" + varIn[ins[1]]
+                if(ins[1] in varIn.keys()):
+                    rslt = rslt + "000" + varIn[ins[1]]
+                elif (ins[1] in labelIn.keys()):
+                    rslt = rslt + "000" + labelIn[ins[1]]
     if(hlterror==0):
         print("Missing hlt instruction")
         sys.exit()
