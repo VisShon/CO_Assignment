@@ -120,7 +120,38 @@ def main():
                 error()
             rslt+="\n"+opcodesF['hlt']
         elif(':' in ins[0]):
-            pass
+            if(ins[1]=="mov"):
+                if (len(ins) != 4):
+                    error()
+                opcodes = isType(ins[1],ins[3])
+            else : opcodes=isType(ins[1])
+            rslt+="\n"
+            rslt+=opcodes[ins[1]]
+            if opcodes == opcodesA:
+                if(len(ins)!=5):
+                    error()
+                rslt += '00'
+                rslt += getrgst(ins[2])
+                rslt += getrgst(ins[3])
+                rslt += getrgst(ins[4])
+            elif opcodes == opcodesB:
+                if (len(ins) != 4):
+                    error()
+                rslt = rslt+getrgst(ins[2])
+                rslt = rslt+str(toBin(int((ins[3])[1:])))
+            elif opcodes == opcodesC:
+                if (len(ins) != 4):
+                    error()
+                rslt = rslt + "00000" + getrgst(ins[2])+getrgst(ins[3])
+            elif opcodes == opcodesD:
+                if (len(ins) != 4):
+                    error()
+                rslt = rslt + getrgst(ins[2]) + varIn[ins[3]]
+            elif opcodes == opcodesE:
+                if (len(ins) != 3):
+                    error()
+                rslt = rslt + "000" + varIn[ins[2]]
+            
 # here we will use that ra function with
 # the elements in the  list ins other omitting the first element which is the label.
         else:
