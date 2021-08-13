@@ -22,7 +22,7 @@ opcodesE={'jmp':'01111','jlt':'10000','jgt':'10001','je':'10010'}
 opcodesF={'hlt':'1001100000000000'}
 
 # register dictionary
-registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110'}
+registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R5': '101', 'R6': '110', 'FLAGS':'111'}
 
 # flags dictionary
 Flags={'V':'0','L':'0','G':'0','E':'0'}
@@ -45,7 +45,7 @@ def isType(inst,val=" "):
         print("Invalid instruction")
         sys.exit()
 
-# function to check
+# function to check if register exists
 def getrgst(reg):
     if(reg in registers.keys()):
         return registers[reg]
@@ -53,10 +53,12 @@ def getrgst(reg):
         print("Invalid register")
         sys.exit()
 
+# function to print syntax error
 def error():
     print("Wrong syntax used for instruction")
     sys.exit()
 
+# function to convert immediates to binary
 def toBin(a):
     if(a<0)or(a>255):
         print("Illegal Immediate values")
@@ -68,36 +70,29 @@ def toBin(a):
     bn = x[::-1]
     return bn
 
-# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/errorGen/test5','r') as f:
-#    instructions = f.read()
-
+#to read input
 instructions = sys.stdin.read()
 
 def main():
 
-# handel input
+    instruction = instructions.split("\n") # create list of instructions
+    count = 0 # program counter
+    varIn={} # to store variables
+    labelIn={} # to store labels
 
-    instruction = instructions.split("\n")
-    count = 0
-    varIn={}
-    labelIn={}
-    addrType={}
-
-#   traversing the program once to add labels, variables and addresses
+# traversing the program once to store labels and their location
     for i in instruction:
         inst=i.split()
         if(len(inst)==0):
             continue
         if(':' in inst[0]):
             labelIn[(inst[0])[:-1]]=str(toBin(count))
-            #addrType[str(count)]=isType(inst[1])
-        #elif(inst[0]=='hlt'):
-            #addrType[str(count)] = isType(inst[0])
-        #elif(inst[0]!='var'):
-            #addrType[str(count)]=isType(inst[1])
         if (inst[0] != 'var')or(len(inst)==0):
             count += 1
-    varerror=0
+
+    varerror=0 # to check is variables are not defined in the beginning
+
+# traversing the program once to store variables and their location
     for i in instruction:
         ins = i.split()
         if (len(ins) == 0):
@@ -114,63 +109,82 @@ def main():
         else:
             varerror=1
 
+# to check Misuse of labels as variables or vice-versa
     for key in varIn:
         if key in labelIn:
             print("Misuse of labels as variables or vice-versa")
             sys.exit()
-    rslt=""
-    hlterror=0
+
+    rslt="" # final output
+
+    hlterror=0 # to check if hlt not being used as the last instruction
+
+# print binary syntax
     for i in instruction:
         ins = i.split()
-        if (len(ins) == 0):
+
+        if (len(ins) == 0): # to avoid empty lines
             continue
+
         if(hlterror==1):
             print("hlt not being used as the last instruction")
             sys.exit()
+
         if(ins[0] == "hlt"):
             hlterror=1
-            if(len(ins)!=1):
+            if(len(ins)!=1): # check syntax of instruction, whether all arguments present or not
                 error()
             rslt+="\n"+opcodesF['hlt']
-        elif(':' in ins[0]):
+
+        elif(':' in ins[0]): # to execute statements with labels
+            if(len(ins)<1):
+                print("empty label")
+                sys.exit()
+            if(ins[1]!='mov') and ('FLAGS' in ins): # Check illegal use of FLAG register
+                print("Illegal use of FLAG register")
+                sys.exit()
             if(ins[1]=="mov"):
-                if (len(ins) != 4):
+                if (len(ins) != 4): # check syntax of instruction, whether all arguments present or not
                     error()
                 opcodes = isType(ins[1],ins[3])
             else : opcodes=isType(ins[1])
+
             rslt+="\n"
             rslt+=opcodes[ins[1]]
+
             if(ins[1]=='hlt'):
                 hlterror=1
+
             if opcodes == opcodesA:
-                if(len(ins)!=5):
+                if(len(ins)!=5): # check syntax of instruction, whether all arguments present or not
                     error()
                 rslt += '00'
                 rslt += getrgst(ins[2])
                 rslt += getrgst(ins[3])
                 rslt += getrgst(ins[4])
+
             elif opcodes == opcodesB:
-                if (len(ins) != 4):
+                if (len(ins) != 4): # check syntax of instruction, whether all arguments present or not
                     error()
                 rslt = rslt+getrgst(ins[2])
                 rslt = rslt+str(toBin(int((ins[3])[1:])))
+
             elif opcodes == opcodesC:
-                if (len(ins) != 4):
+                if (len(ins) != 4): # check syntax of instruction, whether all arguments present or not
                     error()
-                if(ins[3]=='FLAGS'):
-                    rslt = rslt + "00000" + getrgst(ins[2])+"111"
-                else:
-                    rslt = rslt + "00000" + getrgst(ins[2]) + getrgst(ins[3])
+                rslt = rslt + "00000" + getrgst(ins[2]) + getrgst(ins[3])
+
             elif opcodes == opcodesD:
-                if (len(ins) != 4):
+                if (len(ins) != 4): # check syntax of instruction, whether all arguments present or not
                     error()
                 try:
                     rslt = rslt + getrgst(ins[2]) + varIn[ins[3]]
                 except KeyError:
                     print("Invalid variable")
                     sys.exit()
+
             elif opcodes == opcodesE:
-                if (len(ins) != 3):
+                if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error()
                 if (ins[1] in varIn.keys()):
                     rslt = rslt + "000" + varIn[ins[2]]
@@ -179,45 +193,55 @@ def main():
                 else:
                     print("Invalid label or variable")
                     sys.exit()
-        elif(ins[0]=='var'):
+
+        elif(ins[0]=='var'): #skip variable instructions
             continue
+
         else:
+
+            if (ins[0] != 'mov') and ('FLAGS' in ins): # Check illegal use of FLAG register
+                print("Illegal use of FLAG register")
+                sys.exit()
+
             if(ins[0]=="mov"):
-                if (len(ins) != 3):
+                if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error()
                 opcodes = isType(ins[0],ins[2])
             else : opcodes=isType(ins[0])
+
             rslt+="\n"
             rslt+=opcodes[ins[0]]
+
             if opcodes == opcodesA:
-                if(len(ins)!=4):
+                if(len(ins)!=4): # check syntax of instruction, whether all arguments present or not
                     error()
                 rslt += '00'
                 rslt += getrgst(ins[1])
                 rslt += getrgst(ins[2])
                 rslt += getrgst(ins[3])
+
             elif opcodes == opcodesB:
-                if (len(ins) != 3):
+                if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error()
                 rslt = rslt+getrgst(ins[1])
                 rslt = rslt+str(toBin(int((ins[2])[1:])))
+
             elif opcodes == opcodesC:
-                if (len(ins) != 3):
+                if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error()
-                if (ins[2] == 'FLAGS'):
-                    rslt = rslt + "00000" + getrgst(ins[1]) + "111"
-                else:
-                    rslt = rslt + "00000" + getrgst(ins[1]) + getrgst(ins[2])
+                rslt = rslt + "00000" + getrgst(ins[1]) + getrgst(ins[2])
+
             elif opcodes == opcodesD:
-                if (len(ins) != 3):
+                if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error()
                 try:
                     rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
                 except KeyError:
                     print("Use of undefined Variable")
                     sys.exit()
+
             elif opcodes == opcodesE:
-                if (len(ins) != 2):
+                if (len(ins) != 2): # check syntax of instruction, whether all arguments present or not
                     error()
                 if(ins[1] in varIn.keys()):
                     rslt = rslt + "000" + varIn[ins[1]]
@@ -226,10 +250,12 @@ def main():
                 else:
                     print("Invalid label or variable")
                     sys.exit()
-    if(hlterror==0):
+
+    if(hlterror==0): # to check missing hlt instruction
         print("Missing hlt instruction")
         sys.exit()
-    print(rslt)
+
+    print(rslt) # print the final binary
 
 if __name__=="__main__":
     main()
