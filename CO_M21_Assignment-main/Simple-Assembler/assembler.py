@@ -12,8 +12,8 @@
 #       hlt
 
 import sys
-# dictionary for opcodes
 
+# dictionary for opcodes
 opcodesA={'add':'00000','sub':'00001','mul':'00110','xor':'01010','or':'01011','and':'01100'}
 opcodesB={'mov':'00010','rs':'01000','ls':'01001'}
 opcodesC={'mov':'00011','div':'00111','not':'01101','cmp':'01110'}
@@ -68,8 +68,8 @@ def toBin(a):
     bn = x[::-1]
     return bn
 
-#with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/hardBin/test2','r') as f:
-#   instructions = f.read()
+# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/errorGen/test5','r') as f:
+#    instructions = f.read()
 
 instructions = sys.stdin.read()
 
@@ -103,10 +103,14 @@ def main():
         if (len(ins) == 0):
             continue
         if(ins[0]=='var'):
+            if(len(ins)!=2):
+                print("Variable not defined")
+                sys.exit()
             varIn[ins[1]]=str(toBin(count))
             count+=1
             if(varerror==1):
                 print("Variable not declared in beginning")
+                sys.exit()
         else:
             varerror=1
 
@@ -160,11 +164,21 @@ def main():
             elif opcodes == opcodesD:
                 if (len(ins) != 4):
                     error()
-                rslt = rslt + getrgst(ins[2]) + varIn[ins[3]]
+                try:
+                    rslt = rslt + getrgst(ins[2]) + varIn[ins[3]]
+                except KeyError:
+                    print("Invalid variable")
+                    sys.exit()
             elif opcodes == opcodesE:
                 if (len(ins) != 3):
                     error()
-                rslt = rslt + "000" + varIn[ins[2]]
+                if (ins[1] in varIn.keys()):
+                    rslt = rslt + "000" + varIn[ins[2]]
+                elif (ins[1] in labelIn.keys()):
+                    rslt = rslt + "000" + labelIn[ins[2]]
+                else:
+                    print("Invalid label or variable")
+                    sys.exit()
         elif(ins[0]=='var'):
             continue
         else:
@@ -197,7 +211,11 @@ def main():
             elif opcodes == opcodesD:
                 if (len(ins) != 3):
                     error()
-                rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
+                try:
+                    rslt = rslt + getrgst(ins[1]) + varIn[ins[2]]
+                except KeyError:
+                    print("Use of undefined Variable")
+                    sys.exit()
             elif opcodes == opcodesE:
                 if (len(ins) != 2):
                     error()
@@ -205,6 +223,9 @@ def main():
                     rslt = rslt + "000" + varIn[ins[1]]
                 elif (ins[1] in labelIn.keys()):
                     rslt = rslt + "000" + labelIn[ins[1]]
+                else:
+                    print("Invalid label or variable")
+                    sys.exit()
     if(hlterror==0):
         print("Missing hlt instruction")
         sys.exit()
