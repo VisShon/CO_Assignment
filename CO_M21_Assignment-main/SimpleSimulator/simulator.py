@@ -71,11 +71,15 @@ def main():
             if(ins=='00000'):
                 regv[reg1]=regv[reg2]+regv[reg3]
                 if(regv[reg1]<0) or (regv[reg1]>255):
-                    regv['FLAGS']=1000
+                    regv['FV']=1
             elif(ins=='00001'):
                 regv[reg1] = regv[reg2] - regv[reg3]
+                if (regv[reg1] < 0) or (regv[reg1] > 255):
+                    regv['FV'] = 1
             elif(ins=='00110'):
                 regv[reg1] = regv[reg2] * regv[reg3]
+                if (regv[reg1] < 0) or (regv[reg1] > 255):
+                    regv['FV'] = 1
             elif(ins=='01010'):
                 regv[reg1] = regv[reg2] ^ regv[reg3]
             elif (ins == '01011'):
