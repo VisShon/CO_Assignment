@@ -31,12 +31,12 @@ def output(pc):
     print(toBin(regv['FLAGS']))
 
 def memorydump():
-
+    print(instruction)
 
 
 with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/simple/test1','r') as f:
-    instructions = f.read()
-instructions = instructions.split("\n")
+    instruction = f.read()
+instructions = instruction.split("\n")
 
 def main():
     pc = 0
@@ -55,6 +55,7 @@ def main():
                 regv[reg1]=regv[reg2]+regv[reg3]
         output(pc)
         pc=pc+1
+    memorydump()
 
 if __name__=="__main__":
     main()
