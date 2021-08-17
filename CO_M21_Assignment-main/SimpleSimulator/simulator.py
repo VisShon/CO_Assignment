@@ -1,7 +1,9 @@
 import sys
 #binary = sys.stdin.read()
 
-regv = {'R0': 0, 'R1': 0, 'R2': 0, 'R3': 0, 'R4': 0, 'R5': 0, 'R6': 0, 'FLAGS':0}
+regv = {'R0': 0, 'R1': 0, 'R2': 0, 'R3': 0, 'R4': 0, 'R5': 0, 'R6': 0, 'FV':0 , 'FL':0, 'FG':0, 'FE':0}
+# FV , FL , FG , FE is flag register for overflow, less than, greater than, equal to
+
 reg = {'000':'R0' , '001': 'R1', '010': 'R2', '011': 'R3', '100': 'R4', '101': 'R5', '110': 'R6', '111':'FLAGS'}
 
 typeofins={'00000':'A','00001':'A','00010':'B','00011':'C','00100':'D','00101':'D','00110':'A','00111':'C',
@@ -14,13 +16,24 @@ def toBin(a):
         sys.exit()
     bn = bin(a).replace('0b','')
     x = bn[::-1]
+    while len(x) < 16:
+        x += '0'
+    bn = x[::-1]
+    return bn
+
+def pcout(a):
+    if(a<0)or(a>255):
+        print("Illegal Immediate values")
+        sys.exit()
+    bn = bin(a).replace('0b','')
+    x = bn[::-1]
     while len(x) < 8:
         x += '0'
     bn = x[::-1]
     return bn
 
 def output(pc):
-    print(toBin(pc), end =" ")
+    print(pcout(pc), end =" ")
     print(toBin(regv['R0']), end =" ")
     print(toBin(regv['R1']), end=" ")
     print(toBin(regv['R2']), end=" ")
@@ -28,7 +41,11 @@ def output(pc):
     print(toBin(regv['R4']), end=" ")
     print(toBin(regv['R5']), end=" ")
     print(toBin(regv['R6']), end=" ")
-    print(toBin(regv['FLAGS']))
+    print('000000000000',end="")
+    print(regv['FV'],end="")
+    print(regv['FL'], end="")
+    print(regv['FG'], end="")
+    print(regv['FE'])
 
 def memorydump():
     print(instruction)
@@ -53,8 +70,24 @@ def main():
             reg3 = reg[i[13:16]]
             if(ins=='00000'):
                 regv[reg1]=regv[reg2]+regv[reg3]
+                if(regv[reg1]<0) or (regv[reg1]>255):
+                    regv['FLAGS']=1000
+            elif(ins=='00001'):
+                regv[reg1] = regv[reg2] - regv[reg3]
+            elif(ins=='00110'):
+                regv[reg1] = regv[reg2] * regv[reg3]
+            elif(ins=='01010'):
+                regv[reg1] = regv[reg2] ^ regv[reg3]
+            elif (ins == '01011'):
+                regv[reg1] = regv[reg2] | regv[reg3]
+            elif (ins == '01100'):
+                regv[reg1] = regv[reg2] & regv[reg3]
+
+        #add rest of instructions
+
         output(pc)
         pc=pc+1
+        regv['FLAGS']=0
     memorydump()
 
 if __name__=="__main__":
