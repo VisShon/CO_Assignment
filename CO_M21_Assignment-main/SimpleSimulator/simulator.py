@@ -9,6 +9,7 @@ reg = {'000':'R0' , '001': 'R1', '010': 'R2', '011': 'R3', '100': 'R4', '101': '
 typeofins={'00000':'A','00001':'A','00010':'B','00011':'C','00100':'D','00101':'D','00110':'A','00111':'C',
       '01000':'B','01001':'B','01010':'A','01011':'A','01100':'A','01101':'C','01110':'C','01111':'E',
       '10000':'E','10001':'E','10010':'E','10011':'F'}
+mem={}
 
 def toBin(a):
     if(a<0)or(a>255):
@@ -56,14 +57,15 @@ with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21
 instructions = instruction.split("\n")
 
 def main():
-    pc = 0
+    pc = -1
     halt = False
 
-    #instructions=binary.split('\n')
-
-    for i in instructions:
+    while(halt==False):
+        pc+=1
+        i=instructions[pc]
         ins=i[0:5]
         type=typeofins[ins]
+
         if(type=='A'):
             reg1 = reg[i[7:10]]
             reg2 = reg[i[10:13]]
@@ -86,18 +88,61 @@ def main():
                 regv[reg1] = regv[reg2] | regv[reg3]
             elif (ins == '01100'):
                 regv[reg1] = regv[reg2] & regv[reg3]
-
-        #add rest of instructions
-
+        elif(type== 'B'):
+            reg1 = reg[i[5:8]]
+            immediate = int(i[8:16],2)
+            if(ins=='00010'):
+                regv[reg1]=immediate
+                if(regv[reg1]<0) or (regv[reg1]>255):
+                    regv['FV']=1
+            elif(ins=='01000'):
+                regv[reg1] = regv[reg1]*2^(immediate)
+            elif(ins=='01001'):
+                regv[reg1] = regv[reg1]/2^(immediate)
+        elif(type== 'C'):
+            reg1 = reg[i[10:13]]
+            reg2 = reg[i[13:16]]
+            if(ins=='00011'):
+                regv[reg1]=regv[reg2]
+            elif(ins=='00111'):
+                regv['R0']=regv[reg1]/regv[reg2]
+                regv['R1']=regv[reg1]%regv[reg2]
+            elif(ins=='01101'):
+                regv[reg1] = ~regv[reg2]
+            elif(ins=='01110'):
+                a=regv[reg1]
+                b=regv[reg2]
+                if(a==b):
+                    regv['FE']=1
+                elif(a>b):
+                    regv['FG']=1
+                elif(a<b):
+                    regv['FL']=1
+        elif(type=='D'):
+            reg1=reg[i[5:8]]
+            adr=i[8:16]
+            if(ins=='00100'):
+                regv[reg1]=mem[adr]
+            elif(ins=='00101'):
+                mem[adr]=regv[reg1]
+        elif(type=='E'):
+            adr=int(i[8:16],2)
+            if(ins=='01111'):
+                pc=adr
+            elif(ins=='10000'):
+                if(regv['FL']>0):
+                    pc=adr
+            elif(ins=='10001'):
+                if(regv['FG']>0):
+                    pc=adr
+            elif(ins=='10010'):
+                if(regv['FE']>0):
+                    pc=adr
+        elif(type=='F'):
+            halt=True
         output(pc)
-        pc=pc+1
         regv['FLAGS']=0
     memorydump()
 
 if __name__=="__main__":
     main()
-
-
-
-
-
