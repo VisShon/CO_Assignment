@@ -9,6 +9,7 @@ typeofins={'00000':'A','00001':'A','00010':'B','00011':'C','00100':'D','00101':'
       '01000':'B','01001':'B','01010':'A','01011':'A','01100':'A','01101':'C','01110':'C','01111':'E',
       '10000':'E','10001':'E','10010':'E','10011':'F'}
 mem={}
+lst=[]
 
 def toBin(a):
     if(a<0)or(a>255):
@@ -52,15 +53,16 @@ def memorydump():
     for i in instructions:
         print(i)
         count=count+1
+    for i in lst:
+        print(toBin(i))
+        count=count+1
     while(count!=256):
         print("0000000000000000")
         count=count+1
 
-    #print(binary)
-
 binary = sys.stdin.read()
 instructions=binary.split("\n")
-# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test2','r') as f:
+# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/simple/test5','r') as f:
 #     instruction = f.read()
 # instructions = instruction.split("\n")
 
@@ -68,6 +70,7 @@ def main():
     pc = -1
     halt = False
     reset=0
+
     while(halt==False):
         if reset == 1:
             pc+=1
@@ -144,6 +147,7 @@ def main():
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
+                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
                 if(ins=='01111'):
@@ -246,6 +250,7 @@ def main():
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
+                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
                 if(ins=='01111'):
