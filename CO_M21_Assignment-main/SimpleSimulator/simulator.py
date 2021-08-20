@@ -58,11 +58,11 @@ def memorydump():
 
     #print(binary)
 
-# binary = sys.stdin.read()
-# instructions=binary.split("\n")
-with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test2','r') as f:
-    instruction = f.read()
-instructions = instruction.split("\n")
+binary = sys.stdin.read()
+instructions=binary.split("\n")
+# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test2','r') as f:
+#     instruction = f.read()
+# instructions = instruction.split("\n")
 
 def main():
     pc = -1
@@ -116,7 +116,10 @@ def main():
                 reg1 = reg[i[10:13]]
                 reg2 = reg[i[13:16]]
                 if(ins=='00011'):
-                    regv[reg1]=regv[reg2]
+                    if (reg2 == 'FLAGS'):
+                        regv[reg1]=regv['FV']+regv['FL']+regv['FG']+regv['FE']
+                    else:
+                        regv[reg1]=regv[reg2]
                 elif(ins=='00111'):
                     regv['R0']=regv[reg1]/regv[reg2]
                     regv['R1']=regv[reg1]%regv[reg2]
@@ -156,8 +159,13 @@ def main():
                         pc=adr
             elif(type=='F'):
                 halt=True
+
+            regv['FE'] = 0
+            regv['FV'] = 0
+            regv['FL'] = 0
+            regv['FG'] = 0
+            reset = 0
             output(pc)
-            regv['FLAGS']=0
         else:
             reset = 0
             regv['FE'] = 0
@@ -210,7 +218,10 @@ def main():
                 reg1 = reg[i[10:13]]
                 reg2 = reg[i[13:16]]
                 if(ins=='00011'):
-                    regv[reg1]=regv[reg2]
+                    if (reg2 == 'FLAGS'):
+                        regv[reg1] = regv['FV'] + regv['FL'] + regv['FG'] + regv['FE']
+                    else:
+                        regv[reg1] = regv[reg2]
                 elif(ins=='00111'):
                     regv['R0']=regv[reg1]/regv[reg2]
                     regv['R1']=regv[reg1]%regv[reg2]
