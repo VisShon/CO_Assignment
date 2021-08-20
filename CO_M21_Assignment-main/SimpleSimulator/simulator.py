@@ -1,5 +1,4 @@
 import sys
-#binary = sys.stdin.read()
 
 regv = {'R0': 0, 'R1': 0, 'R2': 0, 'R3': 0, 'R4': 0, 'R5': 0, 'R6': 0, 'FV':0 , 'FL':0, 'FG':0, 'FE':0}
 # FV , FL , FG , FE is flag register for overflow, less than, greater than, equal to
@@ -49,17 +48,26 @@ def output(pc):
     print(regv['FE'])
 
 def memorydump():
-    print(instruction)
+    count=0
+    for i in instructions:
+        print(i)
+        count=count+1
+    while(count!=256):
+        print("0000000000000000")
+        count=count+1
 
+    #print(binary)
 
-with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/simple/test1','r') as f:
+# binary = sys.stdin.read()
+# instructions=binary.split("\n")
+with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test2','r') as f:
     instruction = f.read()
 instructions = instruction.split("\n")
 
 def main():
     pc = -1
     halt = False
-
+    reset=0
     while(halt==False):
         if reset == 1:
             pc+=1
