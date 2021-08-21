@@ -53,9 +53,12 @@ def memorydump():
     for i in instructions:
         print(i)
         count=count+1
-    for i in lst:
-        print(toBin(i))
+    i=0
+    while(i!=len(mem)):
+        x=mem[str(pcout(count))]
+        print(toBin(x))
         count=count+1
+        i=i+1
     while(count!=256):
         print("0000000000000000")
         count=count+1
@@ -147,20 +150,23 @@ def main():
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
-                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
                 if(ins=='01111'):
                     pc=adr
+                    pc=pc-1
                 elif(ins=='10000'):
                     if(regv['FL']>0):
                         pc=adr
+                        pc=pc-1
                 elif(ins=='10001'):
                     if(regv['FG']>0):
                         pc=adr
+                        pc=pc-1
                 elif(ins=='10010'):
                     if(regv['FE']>0):
                         pc=adr
+                        pc=pc-1
             elif(type=='F'):
                 halt=True
 
@@ -250,7 +256,6 @@ def main():
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
-                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
                 if(ins=='01111'):
