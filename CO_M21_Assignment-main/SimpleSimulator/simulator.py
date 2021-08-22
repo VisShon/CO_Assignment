@@ -1,4 +1,8 @@
 import sys
+import matplotlib.pyplot as plt
+
+x=[]
+y=[]
 
 regv = {'R0': 0, 'R1': 0, 'R2': 0, 'R3': 0, 'R4': 0, 'R5': 0, 'R6': 0, 'FV':0 , 'FL':0, 'FG':0, 'FE':0}
 # FV , FL , FG , FE is flag register for overflow, less than, greater than, equal to
@@ -53,9 +57,12 @@ def memorydump():
     for i in instructions:
         print(i)
         count=count+1
-    for i in lst:
-        print(toBin(i))
+    i=0
+    while(i!=len(mem)):
+        x=mem[str(pcout(count))]
+        print(toBin(x))
         count=count+1
+        i=i+1
     while(count!=256):
         print("0000000000000000")
         count=count+1
@@ -70,8 +77,9 @@ def main():
     pc = -1
     halt = False
     reset=0
-
+    cycle=-1
     while(halt==False):
+        cycle=cycle+1
         if reset == 1:
             pc+=1
             i=instructions[pc]
@@ -79,6 +87,7 @@ def main():
             type=typeofins[ins]
 
             if(type=='A'):
+                y.append(pc)
                 reg1 = reg[i[7:10]]
                 reg2 = reg[i[10:13]]
                 reg3 = reg[i[13:16]]
@@ -104,6 +113,7 @@ def main():
                 elif (ins == '01100'):
                     regv[reg1] = regv[reg2] & regv[reg3]
             elif(type== 'B'):
+                y.append(pc)
                 reg1 = reg[i[5:8]]
                 immediate = int(i[8:16],2)
                 if(ins=='00010'):
@@ -116,6 +126,7 @@ def main():
                 elif(ins=='01001'):
                     regv[reg1] = regv[reg1]/2^(immediate)
             elif(type== 'C'):
+                y.append(pc)
                 reg1 = reg[i[10:13]]
                 reg2 = reg[i[13:16]]
                 if(ins=='00011'):
@@ -143,25 +154,35 @@ def main():
             elif(type=='D'):
                 reg1=reg[i[5:8]]
                 adr=i[8:16]
+                y.append(int(adr))
+                y.append(pc)
+                x.append(cycle)
                 if(ins=='00100'):
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
-                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
+                y.append(int(adr))
+                y.append(pc)
+                x.append(cycle)
                 if(ins=='01111'):
                     pc=adr
+                    pc=pc-1
                 elif(ins=='10000'):
                     if(regv['FL']>0):
                         pc=adr
+                        pc=pc-1
                 elif(ins=='10001'):
                     if(regv['FG']>0):
                         pc=adr
+                        pc=pc-1
                 elif(ins=='10010'):
                     if(regv['FE']>0):
                         pc=adr
+                        pc=pc-1
             elif(type=='F'):
+                y.append(pc)
                 halt=True
 
             regv['FE'] = 0
@@ -180,8 +201,8 @@ def main():
             i=instructions[pc]
             ins=i[0:5]
             type=typeofins[ins]
-
             if(type=='A'):
+                y.append(pc)
                 reg1 = reg[i[7:10]]
                 reg2 = reg[i[10:13]]
                 reg3 = reg[i[13:16]]
@@ -207,6 +228,7 @@ def main():
                 elif (ins == '01100'):
                     regv[reg1] = regv[reg2] & regv[reg3]
             elif(type== 'B'):
+                y.append(pc)
                 reg1 = reg[i[5:8]]
                 immediate = int(i[8:16],2)
                 if(ins=='00010'):
@@ -219,6 +241,7 @@ def main():
                 elif(ins=='01001'):
                     regv[reg1] = regv[reg1]/2^(immediate)
             elif(type== 'C'):
+                y.append(pc)
                 reg1 = reg[i[10:13]]
                 reg2 = reg[i[13:16]]
                 if(ins=='00011'):
@@ -246,13 +269,18 @@ def main():
             elif(type=='D'):
                 reg1=reg[i[5:8]]
                 adr=i[8:16]
+                y.append(int(adr))
+                y.append(pc)
+                x.append(cycle)
                 if(ins=='00100'):
                     regv[reg1]=mem[adr]
                 elif(ins=='00101'):
                     mem[adr]=regv[reg1]
-                    lst.append(regv[reg1])
             elif(type=='E'):
                 adr=int(i[8:16],2)
+                y.append(int(adr))
+                y.append(pc)
+                x.append(cycle)
                 if(ins=='01111'):
                     pc=adr
                 elif(ins=='10000'):
@@ -265,10 +293,14 @@ def main():
                     if(regv['FE']>0):
                         pc=adr
             elif(type=='F'):
+                y.append(pc)
                 halt=True
             output(pc)
             regv['FLAGS']=0
+        x.append(cycle)
     memorydump()
+    plt.scatter(x, y, c="blue")
+    plt.show()
 
 if __name__=="__main__":
     main()
