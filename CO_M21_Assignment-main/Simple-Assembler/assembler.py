@@ -72,7 +72,9 @@ def toBin(a,pc):
 
 #to read input
 instructions = sys.stdin.read()
-
+# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/assembly/hardBin/test1','r') as f:
+#     instructions = f.read()
+# instruction = instructions.split("\n")
 
 
 def main():
@@ -88,6 +90,9 @@ def main():
         if(len(inst)==0):
             continue
         if(':' in inst[0]):
+            if(inst[0][0:-1] in opcodesA.keys()) or (inst[0][0:-1] in opcodesB.keys()) or (inst[0][0:-1] in opcodesC.keys()) or (inst[0][0:-1] in opcodesD.keys()) or (inst[0][0:-1] in opcodesE.keys()) or (inst[0][0:-1] in opcodesF.keys()) or (inst[0][0:-1] in registers.keys()):
+                error(pc)
+                sys.exit()
             labelIn[(inst[0])[:-1]]=str(toBin(count,pc))
         if (inst[0] != 'var')or(len(inst)==0):
             count += 1
@@ -103,6 +108,12 @@ def main():
         if(ins[0]=='var'):
             if(len(ins)!=2):
                 print("(line no: "+ str(pc) + ")"+"Variable not defined")
+                sys.exit()
+            if(ins[1]=='var')or(ins[1] in opcodesA.keys()) or (ins[1] in opcodesB.keys()) or (ins[1] in opcodesC.keys()) or (ins[1] in opcodesD.keys()) or (ins[1] in opcodesE.keys()) or (ins[1] in opcodesF.keys()) or (ins[1] in registers.keys()):
+                error(pc)
+                sys.exit()
+            if (ins[1].isalnum() == False):
+                print("Line no." + str(pc) + "- variable can only be alphanumeric and underscores")
                 sys.exit()
             varIn[ins[1]]=str(toBin(count,pc))
             count+=1
@@ -140,8 +151,11 @@ def main():
                 error(pc)
             rslt+="\n"+opcodesF['hlt']
 
-        elif(':' in ins[0]): # to execute statements with labels
-            if(len(ins)<1):
+        elif(':' in ins[0]):# to execute statements with labels
+            if(ins[0][0:-1].isalnum()==False):
+                print("Line no."+ str(pc) +"- label can only be alphanumeric and underscores")
+                sys.exit()
+            if(len(ins)<=1):
                 print("(line no: "+ str(pc) + ")"+"empty label")
                 sys.exit()
             if(ins[1]!='mov') and ('FLAGS' in ins): # Check illegal use of FLAG register
@@ -150,6 +164,9 @@ def main():
             if(ins[1]=="mov"):
                 if (len(ins) != 4): # check syntax of instruction, whether all arguments present or not
                     error(pc)
+                if (ins[2] == 'FLAGS'):
+                    print("Line no."+ str(pc) +" - wrong usage of flag register")
+                    sys.exit()
                 opcodes = isType(pc,ins[1],ins[3])
             else : opcodes=isType(pc,ins[1])
 
@@ -208,8 +225,12 @@ def main():
                 sys.exit()
 
             if(ins[0]=="mov"):
+
                 if (len(ins) != 3): # check syntax of instruction, whether all arguments present or not
                     error(pc)
+                if (ins[1] == 'FLAGS'):
+                    print("Line no."+ str(pc) +" - wrong usage of flag register")
+                    sys.exit()
                 opcodes = isType(pc,ins[0],ins[2])
             else : opcodes=isType(pc,ins[0])
 
