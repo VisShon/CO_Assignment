@@ -16,25 +16,15 @@ mem={}
 lst=[]
 
 def toBin(a):
-    if(a>0):
-        if(a>255):
-            print("illegal immediate value")
-            sys.exit()
-        bn = bin(a).replace('0b','')
-        x = bn[::-1]
-        while len(x) < 16:
-            x += '0'
-        bn = x[::-1]
-    else:
-        if(a<-256):
-            print("Illegal Immediate values")
-            sys.exit()
-        bn = bin(a).replace('0b','')
-        bn=bn[1:]
-        x = bn[::-1]
-        while len(x) < 16:
-            x += '0'
-        bn = x[::-1]
+
+    bn = bin(a).replace('0b', '')
+    x = bn[::-1]
+    while len(x) < 16:
+        x += '0'
+    bn = x[::-1]
+    if(len(str(bn))>16):
+        x=str(bn)
+        return(x[-16:])
     return bn
 
 def pcout(a):
@@ -82,7 +72,7 @@ def memorydump():
 
 binary = sys.stdin.read()
 instructions=binary.split("\n")
-# with open('/Users/tanishqashitalsingh/Desktop/assignment-CO/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/simple/test5','r') as f:
+# with open('/Users/tanishqashitalsingh/Desktop/assignment/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test4','r') as f:
 #     instruction = f.read()
 # instructions = instruction.split("\n")
 
@@ -108,19 +98,19 @@ def main():
                     regv[reg1]=regv[reg2]+regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='00001'):
                     regv[reg1] = regv[reg2] - regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='00110'):
                     regv[reg1] = regv[reg2] * regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='01010'):
                     regv[reg1] = regv[reg2] ^ regv[reg3]
@@ -136,7 +126,7 @@ def main():
                     regv[reg1]=immediate
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='01000'):
                     regv[reg1] = regv[reg1]*2^(immediate)
@@ -227,19 +217,19 @@ def main():
                     regv[reg1]=regv[reg2]+regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='00001'):
                     regv[reg1] = regv[reg2] - regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='00110'):
                     regv[reg1] = regv[reg2] * regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='01010'):
                     regv[reg1] = regv[reg2] ^ regv[reg3]
@@ -255,7 +245,7 @@ def main():
                     regv[reg1]=immediate
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
-                        regv[reg1]=0
+                        if(regv[reg1] <0):regv[reg1]=0
                         reset = 1
                 elif(ins=='01000'):
                     regv[reg1] = regv[reg1]*2^(immediate)
