@@ -28,18 +28,18 @@ registers = {'R0': '000', 'R1': '001', 'R2': '010', 'R3': '011', 'R4': '100', 'R
 Flags={'V':'0','L':'0','G':'0','E':'0'}
 
 # function to return type of instruction
-def isType(pc,inst,val=" "):
-    if(inst in opcodesA.keys()):
+def isType(pc,inst):
+    if(inst[0] in opcodesA.keys()):
         return opcodesA
-    elif(inst in opcodesB.keys()) and (val[0]=='$'):
+    elif(inst[0] in opcodesB.keys() and (inst[2])[0]=='$'):
         return opcodesB
-    elif(inst in opcodesC.keys()):
+    elif(inst[0] in opcodesC.keys()):
         return opcodesC
-    elif(inst in opcodesD.keys()):
+    elif(inst[0] in opcodesD.keys()):
         return opcodesD
-    elif(inst in opcodesE.keys()):
+    elif(inst[0] in opcodesE.keys()):
         return opcodesE
-    elif(inst in opcodesF.keys()):
+    elif(inst[0] in opcodesF.keys()):
         return opcodesF
     else:
         print("(line no: "+ str(pc) + ")"+"Invalid instruction")
@@ -167,8 +167,8 @@ def main():
                 if (ins[2] == 'FLAGS'):
                     print("Line no."+ str(pc) +" - wrong usage of flag register")
                     sys.exit()
-                opcodes = isType(pc,ins[1],ins[3])
-            else : opcodes=isType(pc,ins[1])
+                opcodes = isType(pc,ins[1:])
+            else : opcodes=isType(pc,ins[1:])
 
             rslt+="\n"
             rslt+=opcodes[ins[1]]
@@ -231,8 +231,9 @@ def main():
                 if (ins[1] == 'FLAGS'):
                     print("Line no."+ str(pc) +" - wrong usage of flag register")
                     sys.exit()
-                opcodes = isType(pc,ins[0],ins[2])
-            else : opcodes=isType(pc,ins[0])
+                opcodes = isType(pc,ins)
+            else : 
+                opcodes=isType(pc,ins)
 
             rslt+="\n"
             rslt+=opcodes[ins[0]]
