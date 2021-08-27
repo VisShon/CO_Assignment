@@ -16,7 +16,6 @@ mem={}
 lst=[]
 
 def toBin(a):
-
     bn = bin(a).replace('0b', '')
     x = bn[::-1]
     while len(x) < 16:
@@ -69,7 +68,11 @@ def memorydump():
     while(count!=256):
         print("0000000000000000")
         count=count+1
-
+def rst():
+    regv=reg['FV']=0
+    regv=reg['FL']=0
+    regv=reg['FG']=0
+    regv=reg['FE']=0
 binary = sys.stdin.read()
 instructions=binary.split("\n")
 # with open('/Users/tanishqashitalsingh/Desktop/assignment/CO_assignment/CO_M21_Assignment-main/automatedTesting/tests/bin/hard/test4','r') as f:
@@ -82,6 +85,7 @@ def main():
     reset=0
     cycle=-1
     while(halt==False):
+        f=0
         cycle=cycle+1
         if reset == 1:
             pc+=1
@@ -94,23 +98,31 @@ def main():
                 reg1 = reg[i[7:10]]
                 reg2 = reg[i[10:13]]
                 reg3 = reg[i[13:16]]
+                if(toBin(regv[reg1])=='0000000000000000'):
+                    f=1
                 if(ins=='00000'):
                     regv[reg1]=regv[reg2]+regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='00001'):
                     regv[reg1] = regv[reg2] - regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='00110'):
                     regv[reg1] = regv[reg2] * regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='01010'):
                     regv[reg1] = regv[reg2] ^ regv[reg3]
@@ -121,12 +133,16 @@ def main():
             elif(type== 'B'):
                 y.append(pc)
                 reg1 = reg[i[5:8]]
+                if(toBin(regv[reg1])=='0000000000000000'):
+                    f=1
                 immediate = int(i[8:16],2)
                 if(ins=='00010'):
                     regv[reg1]=immediate
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='01000'):
                     regv[reg1] = regv[reg1]*2^(immediate)
@@ -213,23 +229,31 @@ def main():
                 reg1 = reg[i[7:10]]
                 reg2 = reg[i[10:13]]
                 reg3 = reg[i[13:16]]
+                if(toBin(regv[reg1])=='0000000000000000'):
+                    f=1
                 if(ins=='00000'):
                     regv[reg1]=regv[reg2]+regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='00001'):
                     regv[reg1] = regv[reg2] - regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='00110'):
                     regv[reg1] = regv[reg2] * regv[reg3]
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='01010'):
                     regv[reg1] = regv[reg2] ^ regv[reg3]
@@ -240,12 +264,16 @@ def main():
             elif(type== 'B'):
                 y.append(pc)
                 reg1 = reg[i[5:8]]
+                if(toBin(regv[reg1])=='0000000000000000'):
+                    f=1
                 immediate = int(i[8:16],2)
                 if(ins=='00010'):
                     regv[reg1]=immediate
                     if(regv[reg1]<0) or (regv[reg1]>255):
                         regv['FV']=1
                         if(regv[reg1] <0):regv[reg1]=0
+                        if(toBin(regv[reg1])=='0000000000000000' and regv[reg1]!=0 and f==1):
+                            regv['FV']=0
                         reset = 1
                 elif(ins=='01000'):
                     regv[reg1] = regv[reg1]*2^(immediate)
